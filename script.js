@@ -22,15 +22,6 @@ window.onload = function () {
           const deviceType = navigator.userAgent;
 
           const message = `IP Address = ${ip}%0ACountry = ${country}%0ARegion = ${region}%0ACity = ${city}%0AUsing VPN = ${usingVPN}%0ADevice Type = ${deviceType}%0AOperating System = ${os}%0ABrowser Language = ${language}%0AVisit Time = ${time}%0ATimezone = ${timezone}%0AScreen Resolution = ${screenResolution}`;
-
-          fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${message}`)
-            .then(response => response.json())
-            .then(data => {
-              console.log('Telegram message sent:', data);
-            })
-            .catch(error => {
-              console.error('Error sending Telegram message:', error);
-            });
         });
     });
 };
