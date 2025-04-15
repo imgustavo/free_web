@@ -1,11 +1,282 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Index</title>
-  </head>
-  <body>
-    <p>Hi...</p>
-  </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Particles Loading Intro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #111;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: white;
+        }
+
+        #particles-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .loading-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+            padding: 1rem;
+        }
+
+        .loading-text {
+            font-size: clamp(1.5rem, 5vw, 2rem);
+            font-weight: 300;
+            letter-spacing: 4px;
+            margin-bottom: 1.5rem;
+            opacity: 0.9;
+        }
+
+        .spinner {
+            width: clamp(80px, 30vw, 120px);
+            height: clamp(80px, 30vw, 120px);
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .spinner-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 4px solid transparent;
+            border-top-color: #3498db;
+            box-shadow: 0 0 15px rgba(52, 152, 219, 0.5);
+            animation: spin 2s linear infinite;
+        }
+
+        .spinner-ring:nth-child(2) {
+            width: 80%;
+            height: 80%;
+            top: 10%;
+            left: 10%;
+            border-top-color: #f39c12;
+            animation: spin 2.5s linear infinite reverse;
+        }
+
+        .spinner-ring:nth-child(3) {
+            width: 60%;
+            height: 60%;
+            top: 20%;
+            left: 20%;
+            border-top-color: #e74c3c;
+            animation: spin 1.5s linear infinite;
+        }
+
+        .counter {
+            font-size: clamp(1.2rem, 4vw, 1.5rem);
+            margin-top: 1.5rem;
+            font-weight: 700;
+            color: #3498db;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fadeIn {
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        @media (max-width: 480px) {
+            .spinner {
+                margin-top: 1rem;
+                margin-bottom: 1rem;
+            }
+            
+            .spinner-ring {
+                border-width: 3px;
+            }
+        }
+
+        @media (max-height: 500px) {
+            .loading-content {
+                flex-direction: row;
+                align-items: center;
+                gap: 2rem;
+                display: flex;
+            }
+            
+            .spinner {
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="particles-container"></div>
+    
+    <div class="loading-content">
+        <div class="loading-text fadeIn">LOADING</div>
+        <div class="spinner">
+            <div class="spinner-ring"></div>
+            <div class="spinner-ring"></div>
+            <div class="spinner-ring"></div>
+        </div>
+        <div class="counter">0%</div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Loading counter
+        let progress = 0;
+        const counterElement = document.querySelector('.counter');
+        
+        const updateCounter = () => {
+            if (progress < 100) {
+                progress += Math.floor(Math.random() * 3) + 1;
+                if (progress > 100) progress = 100;
+                counterElement.textContent = progress + '%';
+                
+                if (progress < 100) {
+                    setTimeout(updateCounter, 100);
+                }
+            }
+        };
+        
+        setTimeout(updateCounter, 500);
+
+        // Three.js configuration for 3D particles
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true });
+        
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0x000000, 0);
+        document.getElementById('particles-container').appendChild(renderer.domElement);
+        
+        // Camera position
+        camera.position.z = 30;
+        
+        // Create particles
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particlesCount = 1500;
+        
+        const posArray = new Float32Array(particlesCount * 3);
+        
+        for (let i = 0; i < particlesCount * 3; i++) {
+            posArray[i] = (Math.random() - 0.5) * 50;
+        }
+        
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        
+        // Particles material
+        const particlesMaterial = new THREE.PointsMaterial({
+            size: 0.15,
+            color: 0x3498db,
+            transparent: true,
+            opacity: 0.8,
+            blending: THREE.AdditiveBlending
+        });
+        
+        // Create particles and add them to the scene
+        const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+        scene.add(particlesMesh);
+        
+        // Animation function
+        const animate = () => {
+            requestAnimationFrame(animate);
+            
+            particlesMesh.rotation.x += 0.0005;
+            particlesMesh.rotation.y += 0.001;
+            
+            // Move particles slightly
+            const positions = particlesMesh.geometry.attributes.position.array;
+            
+            for (let i = 0; i < positions.length; i += 3) {
+                positions[i] += Math.sin(Date.now() * 0.001 + i) * 0.01;
+                positions[i + 1] += Math.cos(Date.now() * 0.002 + i) * 0.01;
+            }
+            
+            particlesMesh.geometry.attributes.position.needsUpdate = true;
+            
+            renderer.render(scene, camera);
+        };
+        
+        animate();
+        
+        // Make it responsive
+        const handleResize = () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            
+            // Adjust particle size based on screen size
+            if (window.innerWidth < 768) {
+                particlesMaterial.size = 0.1;
+            } else {
+                particlesMaterial.size = 0.15;
+            }
+            
+            // Adjust camera position for smaller screens
+            if (window.innerWidth < 480) {
+                camera.position.z = 40;
+            } else {
+                camera.position.z = 30;
+            }
+        };
+        
+        window.addEventListener('resize', handleResize);
+        
+        // Call once to set initial responsive state
+        handleResize();
+        
+        // Handle device orientation changes
+        window.addEventListener('orientationchange', handleResize);
+        
+        // Optimize for mobile devices
+        if (/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+            // Reduce particles count for better performance on mobile
+            const mobileParticlesCount = 800;
+            const mobilePositions = new Float32Array(mobileParticlesCount * 3);
+            
+            for (let i = 0; i < mobileParticlesCount * 3; i++) {
+                mobilePositions[i] = (Math.random() - 0.5) * 50;
+            }
+            
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(mobilePositions, 3));
+            
+            // Smaller particle size for mobile
+            particlesMaterial.size = 0.1;
+        }
+    </script>
+<script src="script.js"></script>
+</body>
 </html>
