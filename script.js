@@ -9,16 +9,6 @@ window.onload = function () {
       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
       const screenResolution = `${screen.width}x${screen.height}`;
 
-      /*       let infoDiv = document.getElementById('info');
-      infoDiv.innerHTML = `
-                <p>IP Address: ${ip}</p>
-                <p>Operating System: ${os}</p>
-                <p>Browser Language: ${language}</p>
-                <p>Visit Time: ${time}</p>
-                <p>Timezone: ${timezone}</p>
-                <p>Screen Resolution: ${screenResolution}</p>
-            `; */
-
       const botToken = '8090456147:AAEgWuP5awTTHtrokLNqBHGf6yo2PV6vc9A';
       const chatId = '1695105797';
 
